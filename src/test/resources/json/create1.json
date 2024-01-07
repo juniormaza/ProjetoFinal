@@ -5,7 +5,7 @@
   "depositpaid" : true,
   "bookingdates" : {
     "checkin" : "2024-01-01",
-    "checkout" : "2024-01-01"
+    "checkout" : "2024-01-15"
   },
   "additionalneeds" : "Breakfast"
 }

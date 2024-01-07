@@ -113,6 +113,36 @@ public class TesteBooker {     // inicio da classe
 
     }   // fim do get booking
 
+    @Test
+    public void testarAlterarBooking() throws IOException { // inicio do put booking
+        testarCreateBooking();  // Chamando o método que cria o booking
+
+        String jsonBody = lerArquivoJson("src/test/resources/json/update1.json");
+
+        given()
+                .baseUri("https://restful-booker.herokuapp.com")
+                .basePath("/booking/" + bookingId)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
+                .body(jsonBody)
+                .log().all()
+        .when()
+                .put("https://restful-booker.herokuapp.com/booking/" + bookingId)
+        .then()
+               // .log().all()
+                .statusCode(200)
+                .body("firstname", is("Ronyy"))
+                .body("lastname", is("Brown"))
+                .body("totalprice", is(200))
+                .body("depositpaid", is(false))
+                .body( "bookingdates.checkin", is("2024-01-01"))
+        ;
+
+
+
+    }   // fim do put booking
+
 
 
 } // fim da classe
