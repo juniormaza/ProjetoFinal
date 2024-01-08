@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 public class TesteBooker {     // inicio da classe
     // Atributos
     private String bookingId;  // Agora é um campo da classe
+    private String token;
 
     // Funções e Métodos
     // Funções de Apoio
@@ -47,7 +48,7 @@ public class TesteBooker {     // inicio da classe
         ;
         // Extração do token da resposta
 
-        String token = response.jsonPath().getString("token").substring(0);
+        token = response.jsonPath().getString("token");
         System.out.println("Conteúdo do Token: " + token);
 
     }   // fim do post token
@@ -91,7 +92,7 @@ public class TesteBooker {     // inicio da classe
     int totalprice = 400;
     boolean depositpaid = true;
     String checkin = "2024-01-01";
-    String checkout = "2024-01-01";
+    String checkout = "2024-01-15";
 
     given()
             .contentType("application/json")
@@ -120,17 +121,14 @@ public class TesteBooker {     // inicio da classe
         String jsonBody = lerArquivoJson("src/test/resources/json/update1.json");
 
         given()
-                .baseUri("https://restful-booker.herokuapp.com")
-                .basePath("/booking/" + bookingId)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
+                .contentType("application/json")
                 .header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
                 .body(jsonBody)
                 .log().all()
         .when()
                 .put("https://restful-booker.herokuapp.com/booking/" + bookingId)
         .then()
-               // .log().all()
+                .log().all()
                 .statusCode(200)
                 .body("firstname", is("Ronyy"))
                 .body("lastname", is("Brown"))
@@ -140,8 +138,28 @@ public class TesteBooker {     // inicio da classe
         ;
 
 
-
     }   // fim do put booking
+
+    @Test
+    public void testarExcluirBooking() throws IOException { // inicio do delete booking
+
+        testarCreateBooking();  // Chamando o método que cria o booking
+
+
+        given()
+                .contentType("application/json")
+                .header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
+                .log().all()
+        .when()
+                .delete("https://restful-booker.herokuapp.com/booking/" + bookingId)
+        .then()
+                .log().all()
+                .statusCode(201)
+        ;
+
+
+
+    }   // fim do delete user
 
 
 
