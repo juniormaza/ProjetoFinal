@@ -5,20 +5,31 @@ package  apiTest;
 
 
 import io.restassured.response.Response;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+import javax.sound.midi.Soundbank;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 // Classe
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TesteBooker {     // inicio da classe
     // Atributos
-    private String bookingId;  // Agora é um campo da classe
-    private String token;
+    private static String uri = "https://restful-booker.herokuapp.com/";
+    private static String ct = "application/json";
+
+    private static String bookingId;  // Agora é um campo da classe
+    private static String token;
+
 
     // Funções e Métodos
     // Funções de Apoio
@@ -28,18 +39,20 @@ public class TesteBooker {     // inicio da classe
 
     }
     @Test
+    @Order(1)
     public void testarGerarToken() throws IOException { // inicio gerar Token Post
         // carregar os dados do json
         String jsonBody = lerArquivoJson("src/test/resources/json/token1.json");
 
 
         // realizar o teste
-        Response response = (Response) given()
-                .contentType("application/json")
+        Response response = (Response)
+        given()
+                .contentType(ct)
                 .log().all()
                 .body(jsonBody)
         .when()
-                .post("https://restful-booker.herokuapp.com/auth")
+                .post(uri + "auth")
         .then()
                 .log().all()
                 .statusCode(200)
@@ -54,17 +67,19 @@ public class TesteBooker {     // inicio da classe
     }   // fim do post token
 
     @Test
+    @Order(2)
     public void testarCreateBooking() throws IOException {  // inicio do post booking
         // carregar os dados do json
         String jsonBody = lerArquivoJson("src/test/resources/json/create1.json");
 
         //realizar teste
-       Response response = (Response) given()
-                .contentType("application/json")
+       Response response = (Response)
+       given()
+                .contentType(ct)
                 .log().all()
                 .body(jsonBody)
         .when()
-                .post("https://restful-booker.herokuapp.com/booking")
+                .post(uri + "booking")
         .then()
                 .log().all()
                 .statusCode(200)
@@ -82,6 +97,7 @@ public class TesteBooker {     // inicio da classe
     }   // fim do post booking
 
     @Test
+    @Order(3)
     public void testarConsultarBooking() throws IOException {   // inicio do get booking
 
     testarCreateBooking();  // Chamando o método que cria o booking
@@ -95,13 +111,13 @@ public class TesteBooker {     // inicio da classe
     String checkout = "2024-01-15";
 
     given()
-            .contentType("application/json")
+            .contentType(ct)
             .log().all()
     .when()
-            .get("https://restful-booker.herokuapp.com/booking/" + bookingId )
+            .get(uri + "booking/" + bookingId )
     .then()
             .log().all()
-            //.statusCode(200)
+            .statusCode(200)
             .body("firstname", is(firstname))
             .body("lastname", is(lastname))
             .body("totalprice", is(totalprice))
@@ -115,43 +131,49 @@ public class TesteBooker {     // inicio da classe
     }   // fim do get booking
 
     @Test
+    @Order(4)
     public void testarAlterarBooking() throws IOException { // inicio do put booking
         testarCreateBooking();  // Chamando o método que cria o booking
+        //testarGerarToken();
 
         String jsonBody = lerArquivoJson("src/test/resources/json/update1.json");
 
         given()
-                .contentType("application/json")
-                .header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
+                .contentType(ct)
+                //.header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
+                .header("Cookie", "token=" + token)
                 .body(jsonBody)
                 .log().all()
         .when()
-                .put("https://restful-booker.herokuapp.com/booking/" + bookingId)
+                .put(uri + "booking/" + bookingId)
         .then()
                 .log().all()
                 .statusCode(200)
-                .body("firstname", is("Ronyy"))
+                .body("firstname", is("Ronny"))
                 .body("lastname", is("Brown"))
                 .body("totalprice", is(200))
                 .body("depositpaid", is(false))
-                .body( "bookingdates.checkin", is("2024-01-01"))
+                .body( "bookingdates.checkin", is("2024-01-10"))
         ;
 
 
     }   // fim do put booking
 
     @Test
+    @Order(5)
     public void testarExcluirBooking() throws IOException { // inicio do delete booking
 
         testarCreateBooking();  // Chamando o método que cria o booking
+        //testarGerarToken();
 
 
         given()
-                .contentType("application/json")
+                .contentType(ct)
+                //.header("Cookie", "token=" + token)
                 .header("Authorization", "Basic YWRtaW46cGFzc3dvcmQxMjM=")
                 .log().all()
         .when()
-                .delete("https://restful-booker.herokuapp.com/booking/" + bookingId)
+                .delete(uri + "booking/" + bookingId)
         .then()
                 .log().all()
                 .statusCode(201)
@@ -161,6 +183,27 @@ public class TesteBooker {     // inicio da classe
 
     }   // fim do delete user
 
+    @Test
+    @Order(6)
+    public void testarConsultarBookingIds() throws IOException {
 
+
+       /* String firstname = "Ronyy";
+        String lastname = "Brown";
+        String checkin = "2024-01-01";
+        String checkout = "2024-01-10";*/
+
+        given()
+                .contentType("application/json")
+                .log().all()
+        .when()
+                .get(uri + "booking")
+        .then()
+                .log().all()
+                .statusCode(200)
+
+        ;
+
+    }
 
 } // fim da classe

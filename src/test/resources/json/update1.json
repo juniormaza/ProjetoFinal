@@ -1,11 +1,11 @@
 {
-  "firstname" : "Ronyy",
+  "firstname" : "Ronny",
   "lastname" : "Brown",
   "totalprice" : 200,
   "depositpaid" : false,
   "bookingdates" : {
-    "checkin" : "2024-01-01",
-    "checkout" : "2024-01-10"
+    "checkin" : "2024-01-10",
+    "checkout" : "2024-01-15"
   },
   "additionalneeds" : "Dinner"
 }
