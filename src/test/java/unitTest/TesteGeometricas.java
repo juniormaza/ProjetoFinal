@@ -79,7 +79,7 @@ public class TesteGeometricas {
     }
 
     @ParameterizedTest
-    @CsvFileSource(files = "src/test/resources/csv/massaTestePiramide")
+    @CsvFileSource(files = "src/test/resources/csv/massaTestePiramide.csv")
     public void testeAreaPiramideLendoArquivo(double ladoBase, double alturaPiramide,double resultadoEsperado ){
         // Configura
         // Os dados de entrada e o resultado vem da lista

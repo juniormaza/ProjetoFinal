@@ -4,11 +4,14 @@ package  apiTest;
 // Bibliotecas
 
 
+import com.google.gson.Gson;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 
 import javax.sound.midi.Soundbank;
 import java.io.IOException;
@@ -205,5 +208,54 @@ public class TesteBooker {     // inicio da classe
         ;
 
     }
+    @ParameterizedTest
+    @Order(7)
+    @CsvFileSource(resources = "/csv/massaTesteBooking.csv", numLinesToSkip = 1, delimiter = ',')
+    public void testarCreateBookingCSV(
+
+        // inicio do post bookingCSV
+        String firstname,
+        String lastname,
+        double totalprice,
+        Boolean depositpaid,
+        String checkin,
+        String checkout,
+        String additionalneeds) {
+
+        EntityBooker booker = new EntityBooker(); // instancia a classe entity booker
+
+        booker.firstname = firstname;
+        booker.lastname = lastname;
+        booker.totalprice = totalprice;
+        booker.depositpaid = depositpaid;
+
+        BookingDates bookingDates = new BookingDates();
+        bookingDates.checkin = checkin;
+        bookingDates.checkout = checkout;
+
+        booker.bookingdates = bookingDates;
+        booker.additionalneeds = additionalneeds;
+
+        Gson gson = new Gson(); // instancia a classe gson
+        String jsonBody = gson.toJson(booker);
+
+        //realizar teste
+                given()
+                        .contentType(ct)
+                        .log().all()
+                        .body(jsonBody)
+                .when()
+                        .post(uri + "booking")
+                .then()
+                        .log().all()
+                        .statusCode(200)
+                        //.body("booking.firstname", is("Ronyy"))
+                        //.body("booking.totalprice", is(400))
+                        //.body("booking.depositpaid", is(true))
+                        //.body("booking.bookingdates.checkin", is("2024-01-01"))
+                ;
+
+    }   // fim do post booking CSV
+
 
 } // fim da classe
