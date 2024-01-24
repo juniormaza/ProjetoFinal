@@ -137,7 +137,7 @@ public class TesteBooker {     // inicio da classe
     @Order(4)
     public void testarAlterarBooking() throws IOException { // inicio do put booking
         testarCreateBooking();  // Chamando o método que cria o booking
-        //testarGerarToken();
+        testarGerarToken();
 
         String jsonBody = lerArquivoJson("src/test/resources/json/update1.json");
 
